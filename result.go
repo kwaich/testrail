@@ -59,6 +59,20 @@ type SendableResult struct {
 	customResult
 }
 
+// SendableResultExp represents a Test Case result
+// that can be created or updated via the api
+// Elapsed uses string instead of timespan
+type SendableResultExp struct {
+	StatusID     int    `json:"status_id,omitempty"`
+	Comment      string `json:"comment,omitempty"`
+	Version      string `json:"version,omitempty"`
+	Elapsed      string `json:"elapsed,omitempty"`
+	Defects      string `json:"defects,omitempty"`
+	AssignedToID int    `json:"assignedto_id,omitempty"`
+
+	customResult
+}
+
 // SendableResults represents a list of run results
 // that can be created or updated via the api
 type SendableResults struct {
@@ -148,6 +162,14 @@ func (c *Client) AddResult(testID int, newResult SendableResult) (Result, error)
 
 // AddResultForCase adds a new result, comment or assigns a test to the case caseID on run runID
 func (c *Client) AddResultForCase(runID, caseID int, newResult SendableResult) (Result, error) {
+	createdResult := Result{}
+	uri := "add_result_for_case/" + strconv.Itoa(runID) + "/" + strconv.Itoa(caseID)
+	err := c.sendRequest("POST", uri, newResult, &createdResult)
+	return createdResult, err
+}
+
+// AddResultForCaseExp adds a new result, comment or assigns a test to the case caseID on run runID. Experimental.
+func (c *Client) AddResultForCaseExp(runID, caseID int, newResult SendableResultExp) (Result, error) {
 	createdResult := Result{}
 	uri := "add_result_for_case/" + strconv.Itoa(runID) + "/" + strconv.Itoa(caseID)
 	err := c.sendRequest("POST", uri, newResult, &createdResult)
