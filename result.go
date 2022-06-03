@@ -18,6 +18,22 @@ type Result struct {
 	customResult
 }
 
+// ResultExp represents a Test Case result
+type ResultExp struct {
+	AssignedtoID int       `json:"assignedto_id"`
+	Comment      string    `json:"comment"`
+	CreatedBy    int       `json:"created_by"`
+	CreatedOn    timestamp `json:"created_on"`
+	Defects      string    `json:"defects"`
+	Elapsed      string    `json:"elapsed"`
+	ID           int       `json:"id"`
+	StatusID     int       `json:"status_id"`
+	TestID       int       `json:"test_id"`
+	Version      string    `json:"version"`
+
+	customResult
+}
+
 // CustomStepResult represents the custom steps
 // results a Result can have
 type CustomStepResult struct {
@@ -169,8 +185,8 @@ func (c *Client) AddResultForCase(runID, caseID int, newResult SendableResult) (
 }
 
 // AddResultForCaseExp adds a new result, comment or assigns a test to the case caseID on run runID. Experimental.
-func (c *Client) AddResultForCaseExp(runID, caseID int, newResult SendableResultExp) (Result, error) {
-	createdResult := Result{}
+func (c *Client) AddResultForCaseExp(runID, caseID int, newResult SendableResultExp) (ResultExp, error) {
+	createdResult := ResultExp{}
 	uri := "add_result_for_case/" + strconv.Itoa(runID) + "/" + strconv.Itoa(caseID)
 	err := c.sendRequest("POST", uri, newResult, &createdResult)
 	return createdResult, err
