@@ -21,9 +21,13 @@ type Case struct {
 	Title                string       `json:"title"`
 	TypeID               int          `json:"type_id"`
 	UpdatedBy            int          `json:"updated_by"`
-	UdpatedOn            int          `json:"updated_on"`
+	UpdatedOn            int          `json:"updated_on"`
 	State                int          `json:"custom_state,omitempty"`
 	CustomTestRunConfig  []int        `json:"custom_testrun_configs,omitempty"`
+}
+
+type Cases struct {
+	Cases []Case `json:"cases"`
 }
 
 // CustomStep represents the custom steps
@@ -89,14 +93,14 @@ func (c *Client) GetCases(projectID, suiteID int, sectionID ...int) ([]Case, err
 		uri = fmt.Sprintf("%s&section_id=%d", uri, sectionID[0])
 	}
 
-	returnCases := []Case{}
+	returnCases := Cases{}
 	var err error
 	if c.useBetaApi {
 		err = c.sendRequestBeta("GET", uri, nil, &returnCases, "cases")
 	} else {
 		err = c.sendRequest("GET", uri, nil, &returnCases)
 	}
-	return returnCases, err
+	return returnCases.Cases, err
 }
 
 // GetCasesWithCustomFields returns a interface that can be mapped to an array that contains custom fields
@@ -119,14 +123,13 @@ func (c *Client) GetCasesWithCustomFields(projectID, suiteID int, customArray in
 
 // GetCasesWithFilters returns a list of Test Cases on project projectID
 // for a Test Suite suiteID validating the filters
-func (c *Client) GetCasesWithFilters(projectID, suiteID int, filters ...RequestFilterForCases) ([]Case, error) {
+func (c *Client) GetCasesWithFilters(projectID, suiteID int, filters ...RequestFilterForCases) (Cases, error) {
 	uri := fmt.Sprintf("get_cases/%d&suite_id=%d", projectID, suiteID)
 	if len(filters) > 0 {
 		uri = applyFiltersForCase(uri, filters[0])
 	}
 
-	returnCases := []Case{}
-	fmt.Println(uri)
+	returnCases := Cases{}
 	err := c.sendRequest("GET", uri, nil, &returnCases)
 	return returnCases, err
 }

@@ -18,6 +18,7 @@ type Plan struct {
 	Name               string  `json:"name"`
 	PassedCount        int     `json:"passed_count"`
 	ProjectID          int     `json:"project_id"`
+	Refs               string  `json:"refs"`
 	RetestCount        int     `json:"retest_count"`
 	UntestedCount      int     `json:"untested_count"`
 	URL                string  `json:"url"`
@@ -87,14 +88,16 @@ func (c *Client) GetPlans(projectID int, filters ...RequestFilterForPlan) ([]Pla
 	}
 
 	var err error
-	returnPlans := []Plan{}
+	returnPlans := struct {
+		Plans []Plan `json:"plans"`
+	}{}
 	if c.useBetaApi {
 		err = c.sendRequestBeta("GET", uri, nil, &returnPlans, "plans")
 	} else {
 		err = c.sendRequest("GET", uri, nil, &returnPlans)
 	}
 
-	return returnPlans, err
+	return returnPlans.Plans, err
 }
 
 // AddPlan creates a new plan on project projectID and returns it
